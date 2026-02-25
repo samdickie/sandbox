@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+    URL STRUCTURE (Option 3):
+
+    Canonical URL (SEO-optimized, parameter-free):
+    /flight-tracker/BA/1009
+
+    Shows: Next upcoming flight based on current time
+    (In this case: 14:35 departure, as it's the next flight after current time)
+
+    Extended Path URLs (for accessing specific instances):
+    /flight-tracker/BA/1009/history/20251108/0630Z/LHR/CDG (morning flight)
+    /flight-tracker/BA/1009/history/20251108/1845Z/LHR/CDG (evening flight)
+    /flight-tracker/BA/1009/history/20251108/2115Z/LHR/ORY (late flight, different route)
+
+    All extended paths have canonical tag pointing to main URL
+    and noindex meta tag to avoid SEO dilution.
+    -->
+
+    <title>BA1009 at 14:35 - London to Paris - Flight tracker - Skyscanner</title>
+    <link rel="canonical" href="https://skyscanner.net/flight-tracker/BA/1009" />
+    <meta name="description" content="Track British Airways flight BA1009 departing at 14:35 from London Heathrow to Paris Charles de Gaulle on Wed 8 Nov 2025. Real-time status, gates, delays.">
+    <meta name="robots" content="index, follow">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Skyscanner Relative', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            color: #161616;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 0;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .nav a {
+            color: #161616;
+            text-decoration: none;
+        }
+
+        .nav a:hover {
+            color: #0770e3;
+        }
+
+        .breadcrumb-separator {
+            color: #898989;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-title {
+            font-size: 14px;
+            color: #161616;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .flight-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .flight-info {
+            flex: 1;
+        }
+
+        .flight-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .flight-number {
+            font-size: 40px;
+            font-weight: 700;
+            color: #161616;
+            line-height: 1;
+        }
+
+        .route-code {
+            font-size: 40px;
+            font-weight: 400;
+            color: #161616;
+            line-height: 1;
+        }
+
+        .route-separator {
+            font-size: 40px;
+            font-weight: 300;
+            color: #898989;
+            margin: 0 -4px;
+        }
+
+        .status-delayed {
+            font-size: 40px;
+            font-weight: 400;
+            color: #d1d1d1;
+            line-height: 1;
+        }
+
+        .flight-description {
+            font-size: 14px;
+            color: #161616;
+            line-height: 1.6;
+            margin-bottom: 6px;
+            max-width: 800px;
+        }
+
+        .codeshare-info {
+            font-size: 12px;
+            color: #898989;
+            margin-bottom: 24px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 32px;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-label {
+            color: #161616;
+            font-weight: 600;
+        }
+
+        .status-value {
+            color: #e65c00;
+            font-weight: 600;
+        }
+
+        .status-divider {
+            color: #d1d1d1;
+        }
+
+        .status-updated {
+            color: #898989;
+        }
+
+        .refresh-link {
+            color: #0770e3;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 400;
+        }
+
+        .refresh-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Multiple Flights Info Banner */
+        .alert-banner {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: #0770e3;
+        }
+
+        .alert-text {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #161616;
+            margin-bottom: 8px;
+        }
+
+        .alert-description {
+            font-size: 14px;
+            color: #898989;
+            margin-bottom: 16px;
+        }
+
+        .other-flights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .other-flight-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .other-flight-card:hover {
+            border-color: #00a698;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .other-flight-time {
+            font-size: 18px;
+            font-weight: 700;
+            color: #161616;
+            min-width: 60px;
+        }
+
+        .other-flight-route {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .other-flight-airports {
+            font-size: 14px;
+            font-weight: 600;
+            color: #161616;
+        }
+
+        .other-flight-description {
+            font-size: 12px;
+            color: #898989;
+        }
+
+        .other-flight-status {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-departed {
+            background: #f0f0f0;
+            color: #161616;
+        }
+
+        .status-scheduled {
+            background: #e6f7f6;
+            color: #00776b;
+        }
+
+        .view-link {
+            color: #0770e3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Content Card */
+        .main-card {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #161616;
+            margin-bottom: 24px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .details-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .details-box-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #161616;
+            padding: 20px 24px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .details-table tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .details-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .details-table td {
+            padding: 16px 24px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .details-table td:first-child {
+            color: #161616;
+            font-weight: 400;
+        }
+
+        .details-table td:last-child {
+            color: #161616;
+            font-weight: 600;
+        }
+
+        /* At a glance section */
+        .at-glance {
+            padding-top: 32px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .glance-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .glance-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .glance-icon {
+            font-size: 24px;
+            color: #161616;
+            line-height: 1;
+        }
+
+        .glance-label {
+            font-size: 12px;
+            color: #898989;
+            line-height: 1.4;
+        }
+
+        .glance-value {
+            font-size: 16px;
+            color: #161616;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .track-another {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #161616;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 12px 20px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            transition: all 0.15s ease;
+        }
+
+        .track-another:hover {
+            border-color: #00a698;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .track-another-icon {
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .glance-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .other-flight-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .other-flight-status {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .flight-title-row {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="header">
+        <div class="nav">
+            <a href="#">Home</a>
+            <span class="breadcrumb-separator">›</span>
+            <a href="#">Flight tracker</a>
+            <span class="breadcrumb-separator">›</span>
+            <a href="#">London Heathrow Airport (LHR)</a>
+            <span class="breadcrumb-separator">›</span>
+            <span style="color: #898989;">Flight BA1009</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Page Title -->
+        <div class="page-title">[number flight] • Track British Airways BA1009 flight from London to Paris</div>
+
+        <!-- Flight Header -->
+        <div class="flight-header">
+            <div class="flight-info">
+                <div class="flight-title-row">
+                    <span class="flight-number">BA, Flight 1009</span>
+                    <span class="route-code">LHR</span>
+                    <span class="route-separator">›</span>
+                    <span class="route-code">CDG</span>
+                    <span class="status-delayed">Delayed</span>
+                </div>
+                <div class="flight-description">
+                    British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport is scheduled to depart at 14:35 and arrive at 17:00 local time. It is currently delayed by 20 minutes.
+                </div>
+                <div class="codeshare-info">
+                    Tickets for this flight also sold by: Malaysia Airlines (MH8436), Iberia (IB4781), Finnair (AY3810), British Airways (BA15999)
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">British Airways, BA 10009 • Status:</span>
+                <span class="status-value">Delayed</span>
+            </div>
+            <span class="status-divider">•</span>
+            <span class="status-updated">Updated 5 minutes ago</span>
+            <span class="status-divider">•</span>
+            <a href="#" class="refresh-link">
+                <span>↻</span>
+                <span>Refresh</span>
+            </a>
+        </div>
+
+        <!-- Multiple Flights Info Banner -->
+        <div class="alert-banner">
+            <div class="alert-content">
+                <div class="alert-icon">ℹ️</div>
+                <div class="alert-text">
+                    <div class="alert-title">BA1009 operates multiple times today</div>
+                    <div class="alert-description">
+                        See other departures with this flight code on Wed 8 Nov 2025:
+                    </div>
+                    <div class="other-flights-list">
+                        <!-- Flight 1 - Morning departure (Departed) -->
+                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/0630Z/LHR/CDG'">
+                            <div class="other-flight-time">06:30</div>
+                            <div class="other-flight-route">
+                                <div class="other-flight-airports">LHR → CDG</div>
+                                <div class="other-flight-description">London Heathrow → Paris Charles de Gaulle</div>
+                            </div>
+                            <div class="other-flight-status">
+                                <span class="status-badge status-departed">Departed</span>
+                                <a href="/flight-tracker/BA/1009/history/20251108/0630Z/LHR/CDG" class="view-link" onclick="event.stopPropagation()">View status</a>
+                            </div>
+                        </div>
+
+                        <!-- Flight 2 - Evening departure (Scheduled) -->
+                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/1845Z/LHR/CDG'">
+                            <div class="other-flight-time">18:45</div>
+                            <div class="other-flight-route">
+                                <div class="other-flight-airports">LHR → CDG</div>
+                                <div class="other-flight-description">London Heathrow → Paris Charles de Gaulle</div>
+                            </div>
+                            <div class="other-flight-status">
+                                <span class="status-badge status-scheduled">Scheduled</span>
+                                <a href="/flight-tracker/BA/1009/history/20251108/1845Z/LHR/CDG" class="view-link" onclick="event.stopPropagation()">View status</a>
+                            </div>
+                        </div>
+
+                        <!-- Flight 3 - Different route (Rare case: same flight code, different destination) -->
+                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/2115Z/LHR/ORY'">
+                            <div class="other-flight-time">21:15</div>
+                            <div class="other-flight-route">
+                                <div class="other-flight-airports">LHR → ORY</div>
+                                <div class="other-flight-description">London Heathrow → Paris Orly</div>
+                            </div>
+                            <div class="other-flight-status">
+                                <span class="status-badge status-scheduled">Scheduled</span>
+                                <a href="/flight-tracker/BA/1009/history/20251108/2115Z/LHR/ORY" class="view-link" onclick="event.stopPropagation()">View status</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Flight Details Card -->
+        <div class="main-card">
+            <!-- Departure and Arrival Details -->
+            <div class="details-grid">
+                <!-- Departure Box -->
+                <div class="details-box">
+                    <div class="details-box-header">Departure</div>
+                    <table class="details-table">
+                        <tr>
+                            <td>Departs from</td>
+                            <td>London Heathrow Airport (LHR)</td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>Wed 8 Nov 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduled</td>
+                            <td>07:56</td>
+                        </tr>
+                        <tr>
+                            <td>Actual departure</td>
+                            <td>07:56</td>
+                        </tr>
+                        <tr>
+                            <td>Terminal</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>Gate</td>
+                            <td>A4</td>
+                        </tr>
+                        <tr>
+                            <td>Check-in counter</td>
+                            <td>543</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Arrival Box -->
+                <div class="details-box">
+                    <div class="details-box-header">Arrival</div>
+                    <table class="details-table">
+                        <tr>
+                            <td>Arrives at</td>
+                            <td>Paris Charles de Gaulle Airport (CDG)</td>
+                        </tr>
+                        <tr>
+                            <td>Date</td>
+                            <td>Wed 8 Nov 2025</td>
+                        </tr>
+                        <tr>
+                            <td>Scheduled arrival</td>
+                            <td>09:40</td>
+                        </tr>
+                        <tr>
+                            <td>Estimated arrival</td>
+                            <td>09:55</td>
+                        </tr>
+                        <tr>
+                            <td>Terminal</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Gate</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Luggage belt</td>
+                            <td>12</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Track Another Flight Button -->
+            <a href="#" class="track-another">
+                <span class="track-another-icon">←</span>
+                <span>Track another flight</span>
+            </a>
+
+            <!-- At a Glance Section -->
+            <div class="at-glance">
+                <h3 class="section-title">BA1009 at a glance</h3>
+                <div class="glance-grid">
+                    <div class="glance-item">
+                        <div class="glance-icon">⏱</div>
+                        <div class="glance-label">Duration</div>
+                        <div class="glance-value">1 hour 25 mins</div>
+                    </div>
+                    <div class="glance-item">
+                        <div class="glance-icon">✈</div>
+                        <div class="glance-label">Aircraft</div>
+                        <div class="glance-value">Airbus A320</div>
+                    </div>
+                    <div class="glance-item">
+                        <div class="glance-icon">✈</div>
+                        <div class="glance-label">Airline</div>
+                        <div class="glance-value">BA</div>
+                    </div>
+                    <div class="glance-item">
+                        <div class="glance-icon">📊</div>
+                        <div class="glance-label">Status</div>
+                        <div class="glance-value">Delayed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
