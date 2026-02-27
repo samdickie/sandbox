@@ -174,6 +174,11 @@
             color: #898989;
         }
 
+        .status-value-none {
+            color: #898989;
+            font-weight: 600;
+        }
+
         .refresh-link {
             color: #0770e3;
             text-decoration: none;
@@ -249,11 +254,37 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
+        .other-flight-card.selected {
+            border-color: #0770e3;
+            background: #f0f6ff;
+        }
+
+        .other-flight-card.selected:hover {
+            border-color: #0770e3;
+        }
+
+        .status-delayed-badge {
+            background: #fff3e6;
+            color: #e65c00;
+        }
+
         .other-flight-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 160px;
+        }
+
+        .time-value {
             font-size: 18px;
             font-weight: 700;
             color: #161616;
-            min-width: 60px;
+        }
+
+        .time-arrow {
+            font-size: 14px;
+            color: #898989;
+            font-weight: 400;
         }
 
         .other-flight-route {
@@ -439,6 +470,180 @@
             font-size: 16px;
         }
 
+        /* Date Tabs */
+        .date-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+
+        .date-tab {
+            flex: 1;
+            padding: 14px 16px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 400;
+            color: #898989;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s ease;
+            user-select: none;
+            background: white;
+            border: none;
+            outline: none;
+            position: relative;
+        }
+
+        .date-tab:hover {
+            color: #161616;
+            background: #f9f9f9;
+        }
+
+        .date-tab.active {
+            color: #0770e3;
+            font-weight: 600;
+            border-bottom: 2px solid #0770e3;
+        }
+
+        .date-tab-day {
+            display: block;
+            font-size: 11px;
+            color: inherit;
+            margin-bottom: 2px;
+            opacity: 0.75;
+        }
+
+        .date-tab.active .date-tab-day {
+            opacity: 1;
+        }
+
+        .date-tab-date {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .tab-no-service-label {
+            display: block;
+            font-size: 11px;
+            color: #c1c1c1;
+            margin-top: 2px;
+        }
+
+        .date-tab.no-service {
+            color: #c1c1c1;
+            cursor: default;
+        }
+
+        .date-tab.no-service:hover {
+            color: #c1c1c1;
+            background: white;
+        }
+
+        .date-tab.no-service .date-tab-day {
+            color: #c1c1c1;
+        }
+
+        .date-tabs-wrapper {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
+
+        .date-tabs-inner {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .no-flights-notice {
+            display: none;
+            padding: 40px 24px;
+            text-align: center;
+            color: #898989;
+            font-size: 14px;
+        }
+
+        .no-flights-notice.visible {
+            display: block;
+        }
+
+        .no-flights-notice strong {
+            display: block;
+            font-size: 16px;
+            color: #161616;
+            margin-bottom: 8px;
+        }
+
+        .no-flights-notice .track-another {
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        .date-content {
+            display: none;
+        }
+
+        .date-content.active {
+            display: block;
+            padding: 24px;
+        }
+
+        /* Remove double border on alert banner when inside tabs wrapper */
+        .date-content .alert-banner {
+            border-radius: 8px;
+        }
+
+        /* Accordion */
+        .accordion-trigger {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            cursor: pointer;
+            gap: 12px;
+        }
+
+        .accordion-trigger:hover .alert-title {
+            color: #0770e3;
+        }
+
+        .accordion-summary {
+            font-size: 13px;
+            color: #898989;
+            margin-top: 3px;
+        }
+
+        .accordion-chevron {
+            width: 9px;
+            height: 9px;
+            border-right: 2px solid #898989;
+            border-bottom: 2px solid #898989;
+            transform: rotate(45deg);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        .accordion-chevron.open {
+            transform: rotate(-135deg);
+            margin-top: 11px;
+        }
+
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.25s ease;
+        }
+
+        .accordion-body.open {
+            max-height: 600px;
+        }
+
         @media (max-width: 768px) {
             .details-grid {
                 grid-template-columns: 1fr;
@@ -492,12 +697,12 @@
                     <span class="route-code">LHR</span>
                     <span class="route-separator">›</span>
                     <span class="route-code">CDG</span>
-                    <span class="status-delayed">Delayed</span>
+                    <span class="status-delayed" id="header-status">Delayed</span>
                 </div>
-                <div class="flight-description">
+                <div class="flight-description" id="flight-description">
                     British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport is scheduled to depart at 14:35 and arrive at 17:00 local time. It is currently delayed by 20 minutes.
                 </div>
-                <div class="codeshare-info">
+                <div class="codeshare-info" id="codeshare-info">
                     Tickets for this flight also sold by: Malaysia Airlines (MH8436), Iberia (IB4781), Finnair (AY3810), British Airways (BA15999)
                 </div>
             </div>
@@ -507,7 +712,7 @@
         <div class="status-bar">
             <div class="status-item">
                 <span class="status-label">British Airways, BA 10009 • Status:</span>
-                <span class="status-value">Delayed</span>
+                <span class="status-value" id="status-bar-value">Delayed</span>
             </div>
             <span class="status-divider">•</span>
             <span class="status-updated">Updated 5 minutes ago</span>
@@ -518,61 +723,145 @@
             </a>
         </div>
 
+        <!-- Date Tabs -->
+        <div class="date-tabs-wrapper">
+            <div class="date-tabs-inner" role="tablist" aria-label="Browse by date">
+                <button class="date-tab no-service" role="tab" data-day="0" onclick="switchDay(0)">
+                    <span class="date-tab-day">Tue</span>
+                    <span class="date-tab-date">7 Nov</span>
+                    <span class="tab-no-service-label">No service</span>
+                </button>
+                <button class="date-tab" role="tab" data-day="1" onclick="switchDay(1)">
+                    <span class="date-tab-day">Wed</span>
+                    8 Nov
+                </button>
+                <button class="date-tab" role="tab" data-day="2" onclick="switchDay(2)">
+                    <span class="date-tab-day">Thu</span>
+                    9 Nov
+                </button>
+                <button class="date-tab" role="tab" data-day="3" onclick="switchDay(3)">
+                    <span class="date-tab-day">Fri</span>
+                    10 Nov
+                </button>
+            </div>
+
+            <!-- Day 0: Tue 7 Nov -->
+            <div class="date-content" data-day="0">
+                <div class="no-flights-notice visible">
+                    <strong>No scheduled flight on this date</strong>
+                    The flight does not operate on this specific date.
+                    <br>
+                    <a href="#" class="track-another">
+                        <span>←</span>
+                        <span>Track another flight</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Day 1: Wed 8 Nov (active) -->
+            <div class="date-content active" data-day="1">
+
         <!-- Multiple Flights Info Banner -->
         <div class="alert-banner">
             <div class="alert-content">
                 <div class="alert-icon">ℹ️</div>
                 <div class="alert-text">
-                    <div class="alert-title">BA1009 operates multiple times today</div>
-                    <div class="alert-description">
-                        See other departures with this flight code on Wed 8 Nov 2025:
+                    <div class="accordion-trigger" onclick="toggleAccordion()">
+                        <div>
+                            <div class="alert-title">BA1009 operates multiple times today</div>
+                            <div class="alert-description" style="margin-top: 2px;">Click to see other flights operating today with the same flight code</div>
+                        </div>
+                        <div class="accordion-chevron" id="accordion-chevron"></div>
                     </div>
-                    <div class="other-flights-list">
-                        <!-- Flight 1 - Morning departure (Departed) -->
-                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/0630Z/LHR/CDG'">
-                            <div class="other-flight-time">06:30</div>
+                    <div class="accordion-body" id="accordion-body">
+                    <div class="other-flights-list" style="margin-top: 16px;">
+                        <div class="other-flight-card" data-flight="0630" onclick="selectFlight(this, '0630')">
+                            <div class="other-flight-time">
+                                <span class="time-value">06:30</span>
+                                <span class="time-arrow">→</span>
+                                <span class="time-value">08:50</span>
+                            </div>
                             <div class="other-flight-route">
                                 <div class="other-flight-airports">LHR → CDG</div>
                                 <div class="other-flight-description">London Heathrow → Paris Charles de Gaulle</div>
                             </div>
                             <div class="other-flight-status">
                                 <span class="status-badge status-departed">Departed</span>
-                                <a href="/flight-tracker/BA/1009/history/20251108/0630Z/LHR/CDG" class="view-link" onclick="event.stopPropagation()">View status</a>
                             </div>
                         </div>
 
-                        <!-- Flight 2 - Evening departure (Scheduled) -->
-                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/1845Z/LHR/CDG'">
-                            <div class="other-flight-time">18:45</div>
+                        <div class="other-flight-card selected" data-flight="1435" onclick="selectFlight(this, '1435')">
+                            <div class="other-flight-time">
+                                <span class="time-value">14:35</span>
+                                <span class="time-arrow">→</span>
+                                <span class="time-value">17:00</span>
+                            </div>
+                            <div class="other-flight-route">
+                                <div class="other-flight-airports">LHR → CDG</div>
+                                <div class="other-flight-description">London Heathrow → Paris Charles de Gaulle</div>
+                            </div>
+                            <div class="other-flight-status">
+                                <span class="status-badge status-delayed-badge">Delayed</span>
+                            </div>
+                        </div>
+
+                        <div class="other-flight-card" data-flight="1845" onclick="selectFlight(this, '1845')">
+                            <div class="other-flight-time">
+                                <span class="time-value">18:45</span>
+                                <span class="time-arrow">→</span>
+                                <span class="time-value">21:00</span>
+                            </div>
                             <div class="other-flight-route">
                                 <div class="other-flight-airports">LHR → CDG</div>
                                 <div class="other-flight-description">London Heathrow → Paris Charles de Gaulle</div>
                             </div>
                             <div class="other-flight-status">
                                 <span class="status-badge status-scheduled">Scheduled</span>
-                                <a href="/flight-tracker/BA/1009/history/20251108/1845Z/LHR/CDG" class="view-link" onclick="event.stopPropagation()">View status</a>
                             </div>
                         </div>
 
-                        <!-- Flight 3 - Different route (Rare case: same flight code, different destination) -->
-                        <div class="other-flight-card" onclick="window.location.href='/flight-tracker/BA/1009/history/20251108/2115Z/LHR/ORY'">
-                            <div class="other-flight-time">21:15</div>
+                        <div class="other-flight-card" data-flight="2115" onclick="selectFlight(this, '2115')">
+                            <div class="other-flight-time">
+                                <span class="time-value">21:15</span>
+                                <span class="time-arrow">→</span>
+                                <span class="time-value">23:25</span>
+                            </div>
                             <div class="other-flight-route">
                                 <div class="other-flight-airports">LHR → ORY</div>
                                 <div class="other-flight-description">London Heathrow → Paris Orly</div>
                             </div>
                             <div class="other-flight-status">
                                 <span class="status-badge status-scheduled">Scheduled</span>
-                                <a href="/flight-tracker/BA/1009/history/20251108/2115Z/LHR/ORY" class="view-link" onclick="event.stopPropagation()">View status</a>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </div><!-- /other-flights-list -->
+                    </div><!-- /accordion-body -->
+                </div><!-- /alert-text -->
+            </div><!-- /alert-content -->
+        </div><!-- /alert-banner -->
 
-        <!-- Main Flight Details Card -->
-        <div class="main-card">
+            </div><!-- /date-content day 1 -->
+
+            <!-- Day 2: Thu 9 Nov (single flight — no card needed, tables shown directly) -->
+            <div class="date-content" data-day="2"></div>
+
+            <!-- Day 3: Fri 10 Nov -->
+            <div class="date-content" data-day="3">
+                <div class="no-flights-notice visible">
+                    <strong>No flight status information available at this time</strong>
+                    Either there is no scheduled flight on this day or we are yet to receive the latest flight status data from our partners.
+                    <br>
+                    <a href="#" class="track-another">
+                        <span>←</span>
+                        <span>Track another flight</span>
+                    </a>
+                </div>
+            </div><!-- /date-content day 3 -->
+
+        </div><!-- /date-tabs-wrapper -->
+
+        <!-- Main Flight Details Card (shared across days) -->
+        <div class="main-card" id="main-card">
             <!-- Departure and Arrival Details -->
             <div class="details-grid">
                 <!-- Departure Box -->
@@ -585,27 +874,28 @@
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td>Wed 8 Nov 2025</td>
+                            <td id="dep-date">Wed 8 Nov 2025</td>
                         </tr>
+
                         <tr>
                             <td>Scheduled</td>
-                            <td>07:56</td>
+                            <td id="dep-scheduled">14:35</td>
                         </tr>
                         <tr>
-                            <td>Actual departure</td>
-                            <td>07:56</td>
+                            <td id="dep-actual-label">Actual departure</td>
+                            <td id="dep-actual">14:55</td>
                         </tr>
                         <tr>
                             <td>Terminal</td>
-                            <td>5</td>
+                            <td id="dep-terminal">5</td>
                         </tr>
                         <tr>
                             <td>Gate</td>
-                            <td>A4</td>
+                            <td id="dep-gate">A4</td>
                         </tr>
                         <tr>
                             <td>Check-in counter</td>
-                            <td>543</td>
+                            <td id="dep-checkin">543</td>
                         </tr>
                     </table>
                 </div>
@@ -616,43 +906,41 @@
                     <table class="details-table">
                         <tr>
                             <td>Arrives at</td>
-                            <td>Paris Charles de Gaulle Airport (CDG)</td>
+                            <td id="arr-airport">Paris Charles de Gaulle Airport (CDG)</td>
                         </tr>
                         <tr>
                             <td>Date</td>
-                            <td>Wed 8 Nov 2025</td>
+                            <td id="arr-date">Wed 8 Nov 2025</td>
                         </tr>
                         <tr>
                             <td>Scheduled arrival</td>
-                            <td>09:40</td>
+                            <td id="arr-scheduled">17:00</td>
                         </tr>
                         <tr>
-                            <td>Estimated arrival</td>
-                            <td>09:55</td>
+                            <td id="arr-estimated-label">Estimated arrival</td>
+                            <td id="arr-estimated">17:20</td>
                         </tr>
                         <tr>
                             <td>Terminal</td>
-                            <td>-</td>
+                            <td id="arr-terminal">—</td>
                         </tr>
                         <tr>
                             <td>Gate</td>
-                            <td>-</td>
+                            <td id="arr-gate">—</td>
                         </tr>
                         <tr>
                             <td>Luggage belt</td>
-                            <td>12</td>
+                            <td id="arr-luggage">12</td>
                         </tr>
                     </table>
                 </div>
             </div>
 
-            <!-- Track Another Flight Button -->
             <a href="#" class="track-another">
                 <span class="track-another-icon">←</span>
                 <span>Track another flight</span>
             </a>
 
-            <!-- At a Glance Section -->
             <div class="at-glance">
                 <h3 class="section-title">BA1009 at a glance</h3>
                 <div class="glance-grid">
@@ -674,11 +962,146 @@
                     <div class="glance-item">
                         <div class="glance-icon">📊</div>
                         <div class="glance-label">Status</div>
-                        <div class="glance-value">Delayed</div>
+                        <div class="glance-value" id="glance-status">Delayed</div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div><!-- /main-card -->
+
     </div>
+
+    <script>
+        var flightData = {
+            '0630': {
+                date: 'Wed 8 Nov 2025',
+                dep:  { scheduled: '06:30', actualLabel: 'Actual departure', actual: '06:33', terminal: '5', gate: 'B22', checkin: '243' },
+                arr:  { airport: 'Paris Charles de Gaulle Airport (CDG)', scheduled: '08:50', estimatedLabel: 'Actual arrival', estimated: '08:47', terminal: '2A', gate: '—', luggage: '7' },
+                status: 'Departed', titleStatus: 'Departed',
+                description: 'British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport departed at 06:30 and has now landed.'
+            },
+            '1435': {
+                date: 'Wed 8 Nov 2025',
+                dep:  { scheduled: '14:35', actualLabel: 'Actual departure', actual: '14:55', terminal: '5', gate: 'A4', checkin: '543' },
+                arr:  { airport: 'Paris Charles de Gaulle Airport (CDG)', scheduled: '17:00', estimatedLabel: 'Estimated arrival', estimated: '17:20', terminal: '—', gate: '—', luggage: '12' },
+                status: 'Delayed', titleStatus: 'Delayed',
+                description: 'British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport is scheduled to depart at 14:35 and arrive at 17:00 local time. It is currently delayed by 20 minutes.'
+            },
+            '1845': {
+                date: 'Wed 8 Nov 2025',
+                dep:  { scheduled: '18:45', actualLabel: 'Actual departure', actual: '—', terminal: '5', gate: '—', checkin: '—' },
+                arr:  { airport: 'Paris Charles de Gaulle Airport (CDG)', scheduled: '21:00', estimatedLabel: 'Estimated arrival', estimated: '21:00', terminal: '—', gate: '—', luggage: '—' },
+                status: 'Scheduled', titleStatus: 'Scheduled',
+                description: 'British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport is scheduled to depart at 18:45 and arrive at 21:00 local time.'
+            },
+            '2115': {
+                date: 'Wed 8 Nov 2025',
+                dep:  { scheduled: '21:15', actualLabel: 'Actual departure', actual: '—', terminal: '5', gate: '—', checkin: '—' },
+                arr:  { airport: 'Paris Orly Airport (ORY)', scheduled: '23:25', estimatedLabel: 'Estimated arrival', estimated: '23:25', terminal: '—', gate: '—', luggage: '—' },
+                status: 'Scheduled', titleStatus: 'Scheduled',
+                description: 'British Airways flight BA1009 from London Heathrow to Paris Orly Airport is scheduled to depart at 21:15 and arrive at 23:25 local time.'
+            },
+            'thu-1435': {
+                date: 'Thu 9 Nov 2025',
+                dep:  { scheduled: '14:35', actualLabel: 'Actual departure', actual: '—', terminal: '5', gate: 'B12', checkin: '543' },
+                arr:  { airport: 'Paris Charles de Gaulle Airport (CDG)', scheduled: '17:00', estimatedLabel: 'Estimated arrival', estimated: '17:00', terminal: '—', gate: '—', luggage: '—' },
+                status: 'Scheduled', titleStatus: 'Scheduled',
+                description: 'British Airways flight BA1009 from London Heathrow to Paris Charles de Gaulle Airport is scheduled to depart at 14:35 and arrive at 17:00 local time.'
+            }
+        };
+
+        function toggleAccordion() {
+            document.getElementById('accordion-body').classList.toggle('open');
+            document.getElementById('accordion-chevron').classList.toggle('open');
+        }
+
+        function selectFlight(card, id) {
+            // Deselect cards within the same day panel (card may be null for single-flight days)
+            if (card) {
+                var panel = card.closest('.date-content');
+                panel.querySelectorAll('.other-flight-card').forEach(function(c) {
+                    c.classList.remove('selected');
+                });
+                card.classList.add('selected');
+            }
+
+            var f = flightData[id];
+
+            // Close accordion and update its summary
+            var accordionBody    = document.getElementById('accordion-body');
+            var accordionChevron = document.getElementById('accordion-chevron');
+            if (accordionBody) {
+                accordionBody.classList.remove('open');
+                accordionChevron.classList.remove('open');
+            }
+
+            // Show main card
+            document.getElementById('main-card').style.display = '';
+
+            // Update departure table
+            document.getElementById('dep-date').textContent         = f.date;
+            document.getElementById('dep-scheduled').textContent    = f.dep.scheduled;
+            document.getElementById('dep-actual-label').textContent = f.dep.actualLabel;
+            document.getElementById('dep-actual').textContent       = f.dep.actual;
+            document.getElementById('dep-terminal').textContent     = f.dep.terminal;
+            document.getElementById('dep-gate').textContent         = f.dep.gate;
+            document.getElementById('dep-checkin').textContent      = f.dep.checkin;
+
+            // Update arrival table
+            document.getElementById('arr-date').textContent             = f.date;
+            document.getElementById('arr-airport').textContent          = f.arr.airport;
+            document.getElementById('arr-scheduled').textContent        = f.arr.scheduled;
+            document.getElementById('arr-estimated-label').textContent  = f.arr.estimatedLabel;
+            document.getElementById('arr-estimated').textContent        = f.arr.estimated;
+            document.getElementById('arr-terminal').textContent         = f.arr.terminal;
+            document.getElementById('arr-gate').textContent             = f.arr.gate;
+            document.getElementById('arr-luggage').textContent          = f.arr.luggage;
+
+            // Update header description and title status
+            document.getElementById('codeshare-info').style.display = '';
+            document.getElementById('flight-description').textContent = f.description;
+            var headerStatus = document.getElementById('header-status');
+            headerStatus.textContent = f.titleStatus;
+            headerStatus.style.display = '';
+
+            // Update status bar and at-a-glance
+            var statusBarValue = document.getElementById('status-bar-value');
+            statusBarValue.textContent = f.status;
+            statusBarValue.className = 'status-value';
+            document.getElementById('glance-status').textContent = f.status;
+        }
+
+        function switchDay(dayIndex) {
+            document.querySelectorAll('.date-tab').forEach(function(tab) {
+                tab.classList.toggle('active', parseInt(tab.dataset.day) === dayIndex);
+            });
+            document.querySelectorAll('.date-content').forEach(function(panel) {
+                panel.classList.toggle('active', parseInt(panel.dataset.day) === dayIndex);
+            });
+
+            var mainCard = document.getElementById('main-card');
+
+            if (dayIndex === 0 || dayIndex === 3) {
+                // No service — hide the tables and update header copy
+                mainCard.style.display = 'none';
+                document.getElementById('header-status').style.display = 'none';
+                document.getElementById('codeshare-info').style.display = 'none';
+                document.getElementById('flight-description').textContent = 'No flight status data is available at this time for British Airways flight BA1009 on this date.';
+                var statusBarValue = document.getElementById('status-bar-value');
+                statusBarValue.textContent = 'No status available';
+                statusBarValue.className = 'status-value-none';
+                document.getElementById('glance-status').textContent = 'No status available';
+            } else if (dayIndex === 1) {
+                // Wed 8 Nov — auto-select the 14:35 (pre-selected by default)
+                var card = document.querySelector('[data-flight="1435"]');
+                selectFlight(card, '1435');
+            } else if (dayIndex === 2) {
+                // Thu 9 Nov — only one flight, load tables directly (no card)
+                selectFlight(null, 'thu-1435');
+            }
+        }
+
+        // Set initial state
+        switchDay(1);
+    </script>
 </body>
 </html>
